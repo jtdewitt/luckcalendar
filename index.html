@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luck Calendar — 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0a0a0f;
+    --parchment: #e8dfc8;
+    --parchment-dim: #c8bfa4;
+    --crimson: #8b1a1a;
+    --gold: #b8960c;
+    --ghost: #3a3a4a;
+    --glow: rgba(184, 150, 12, 0.18);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--ink);
+    color: var(--parchment);
+    font-family: 'IM Fell English', serif;
+    min-height: 100vh;
+    padding-bottom: 6rem;
+    background-image:
+      radial-gradient(ellipse at 20% 30%, rgba(139,26,26,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 70%, rgba(184,150,12,0.05) 0%, transparent 60%);
+  }
+
+  /* ── HEADER ─────────────────────────────────────────────── */
+  .site-header {
+    text-align: center;
+    padding: 4rem 1rem 2rem;
+    position: relative;
+  }
+
+  .site-header::after {
+    content: '';
+    display: block;
+    margin: 1.5rem auto 0;
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+  }
+
+  .site-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.8rem, 6vw, 3.2rem);
+    letter-spacing: 0.25em;
+    color: var(--parchment);
+    text-transform: uppercase;
+  }
+
+  .site-year {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.75rem, 2vw, 0.9rem);
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    margin-top: 0.4rem;
+    text-transform: uppercase;
+  }
+
+  /* ── MONTH ──────────────────────────────────────────────── */
+  .month {
+    max-width: 680px;
+    margin: 3.5rem auto 0;
+    padding: 0 1rem;
+  }
+
+  .month-header {
+    text-align: center;
+    margin-bottom: 1.2rem;
+    position: relative;
+  }
+
+  .month-name {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    letter-spacing: 0.3em;
+    color: var(--parchment-dim);
+    text-transform: uppercase;
+  }
+
+  .month-ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+    color: var(--gold);
+    font-size: 0.7rem;
+    opacity: 0.6;
+    letter-spacing: 0.2em;
+  }
+
+  .month-ornament::before,
+  .month-ornament::after {
+    content: '';
+    display: inline-block;
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.5;
+  }
+
+  /* ── WEEKDAY LABELS ─────────────────────────────────────── */
+  .weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 0.4rem;
+  }
+
+  .weekday-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-align: center;
+    color: var(--ghost);
+    padding: 0.3rem 0;
+    text-transform: uppercase;
+  }
+
+  /* ── GRID ───────────────────────────────────────────────── */
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+  }
+
+  .day {
+    position: relative;
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(200,191,164,0.08);
+    background: rgba(255,255,255,0.015);
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.7rem, 2vw, 0.9rem);
+    color: var(--parchment-dim);
+    user-select: none;
+    overflow: hidden;
+  }
+
+  .day.empty {
+    background: transparent;
+    border-color: transparent;
+  }
+
+  /* Past days */
+  .day.past {
+    color: rgba(200,191,164,0.25);
+  }
+
+  .day.past .x-mark {
+    display: block;
+  }
+
+  .x-mark {
+    display: none;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .x-mark line {
+    stroke: var(--crimson);
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    opacity: 0.65;
+  }
+
+  /* Today */
+  .day.today {
+    border-color: var(--gold);
+    background: var(--glow);
+    color: var(--parchment);
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+
+  .today-label {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: clamp(0.45rem, 1.2vw, 0.55rem);
+    color: var(--gold);
+    letter-spacing: 0.02em;
+    text-align: center;
+    line-height: 1.2;
+    margin-top: 1px;
+    white-space: nowrap;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 6px 1px rgba(184,150,12,0.2); }
+    50%       { box-shadow: 0 0 18px 4px rgba(184,150,12,0.4); }
+  }
+
+  /* Future days */
+  .day.future {
+    color: rgba(200,191,164,0.45);
+  }
+
+  /* ── FOOTER ─────────────────────────────────────────────── */
+  .site-footer {
+    text-align: center;
+    margin-top: 5rem;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.75rem;
+    color: var(--ghost);
+    letter-spacing: 0.1em;
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-title">Luck Calendar</div>
+  <div class="site-year">✦ &nbsp; MMXXVI &nbsp; ✦</div>
+</header>
+
+<main id="calendar"></main>
+
+<footer class="site-footer">The wheel turns regardless.</footer>
+
+<script>
+const MONTHS = [
+  'January','February','March','April','May','June',
+  'July','August','September','October','November','December'
+];
+const DAYS_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+const today = new Date();
+const todayY = today.getFullYear();
+const todayM = today.getMonth(); // 0-indexed
+const todayD = today.getDate();
+
+function daysInMonth(year, month) {
+  return new Date(year, month + 1, 0).getDate();
+}
+
+function firstDayOfWeek(year, month) {
+  return new Date(year, month, 1).getDay();
+}
+
+const container = document.getElementById('calendar');
+
+for (let m = 0; m < 12; m++) {
+  const section = document.createElement('section');
+  section.className = 'month';
+  section.id = `month-${m}`;
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'month-header';
+  header.innerHTML = `
+    <div class="month-ornament">✦</div>
+    <div class="month-name">${MONTHS[m]}</div>
+  `;
+  section.appendChild(header);
+
+  // Weekday labels
+  const weekdaysRow = document.createElement('div');
+  weekdaysRow.className = 'weekdays';
+  DAYS_SHORT.forEach(d => {
+    const lbl = document.createElement('div');
+    lbl.className = 'weekday-label';
+    lbl.textContent = d;
+    weekdaysRow.appendChild(lbl);
+  });
+  section.appendChild(weekdaysRow);
+
+  // Days grid
+  const grid = document.createElement('div');
+  grid.className = 'days-grid';
+
+  const offset = firstDayOfWeek(2026, m);
+  const total = daysInMonth(2026, m);
+
+  // Empty cells before day 1
+  for (let i = 0; i < offset; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'day empty';
+    grid.appendChild(cell);
+  }
+
+  for (let d = 1; d <= total; d++) {
+    const cell = document.createElement('div');
+
+    const isToday = (m === todayM && d === todayD && todayY === 2026);
+    const isPast  = (m < todayM) || (m === todayM && d < todayD && todayY === 2026);
+
+    if (isToday) {
+      cell.className = 'day today';
+      cell.innerHTML = `
+        <span>${d}</span>
+        <span class="today-label">Today's Your<br>Lucky Day</span>
+      `;
+    } else if (isPast) {
+      cell.className = 'day past';
+      cell.innerHTML = `
+        <span>${d}</span>
+        <svg class="x-mark" viewBox="0 0 40 40" preserveAspectRatio="none">
+          <line x1="6" y1="6" x2="34" y2="34"/>
+          <line x1="34" y1="6" x2="6" y2="34"/>
+        </svg>
+      `;
+    } else {
+      cell.className = 'day future';
+      cell.innerHTML = `<span>${d}</span>`;
+    }
+
+    grid.appendChild(cell);
+  }
+
+  section.appendChild(grid);
+  container.appendChild(section);
+}
+
+// Scroll current month into view
+const currentMonthEl = document.getElementById(`month-${todayM}`);
+if (currentMonthEl) {
+  setTimeout(() => {
+    currentMonthEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+</script>
+</body>
+</html>
